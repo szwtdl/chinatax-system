@@ -55,7 +55,6 @@ func (h *AccountHandler) List(c *gin.Context) {
 			Avatar:       v.Avatar,
 			Nickname:     v.Nickname,
 			Username:     v.Username,
-			Token:        v.Token,
 			Status:       v.Status,
 			Super:        v.Super,
 			RegisterTime: v.RegisterTime,

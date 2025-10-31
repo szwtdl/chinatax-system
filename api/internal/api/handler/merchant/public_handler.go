@@ -26,12 +26,14 @@ type PublicHandler struct {
 	merchantService *service.MerchantService
 	cityTaxService  *service.CityTaxService
 	emailService    *service.EmailVerificationService
+	platformService *service.MerchantPlatformService
 	minApp          *miniprogram.MiniProgram
 }
 
 func NewPublicHandler(app *types.AppConfig, db *gorm.DB, log *zap.SugaredLogger) *PublicHandler {
-	merchantService := service.NewMerchantService(db, repository.NewBaseRepository[model.Merchant]()) // ✅ 注入 repo
-	cityTaxService := service.NewCityTaxService(db, repository.NewBaseRepository[model.CityTax]())    // ✅ 注入 repo
+	merchantService := service.NewMerchantService(db, repository.NewBaseRepository[model.Merchant]())
+	platformService := service.NewMerchantPlatformService(db, repository.NewBaseRepository[model.MerchantPlatform]())
+	cityTaxService := service.NewCityTaxService(db, repository.NewBaseRepository[model.CityTax]())
 	emailService := service.NewEmailVerificationService(db)
 	wc := wechat.NewWechat()
 	minApp := wc.GetMiniProgram(&config.Config{
@@ -53,6 +55,7 @@ func NewPublicHandler(app *types.AppConfig, db *gorm.DB, log *zap.SugaredLogger)
 			Log: log,
 		},
 		merchantService: merchantService,
+		platformService: platformService,
 		cityTaxService:  cityTaxService,
 		emailService:    emailService,
 		minApp:          minApp,
@@ -143,7 +146,6 @@ func (h *PublicHandler) MobileLogin(c *gin.Context) {
 		resp.ERROR(c, types.BizMsg[types.InvalidParam])
 		return
 	}
-
 	decrypt, err := h.minApp.GetEncryptor().Decrypt(session.SessionKey, req.EncryptedData, req.Iv)
 	if err != nil {
 		h.Log.Error(err)
@@ -151,36 +153,28 @@ func (h *PublicHandler) MobileLogin(c *gin.Context) {
 		return
 	}
 	mobile := decrypt.PhoneNumber
-
-	user, err := h.merchantService.GetByUsername(mobile)
-	if err != nil || user == nil {
-		// 用户不存在，注册
-		salt, _ := utils.GenerateSalt(16)
-		password := utils.RandString(8)
-		hashedPwd, _ := utils.HashPassword(password, salt)
-		user = &model.Merchant{
-			Username:     mobile,
-			Password:     hashedPwd,
-			Salt:         salt,
-			RegisterTime: time.Now().Format("2006-01-02 15:04:05"),
-			RegisterIP:   c.ClientIP(),
-		}
-		if err = h.merchantService.Create(user); err != nil {
-			h.Log.Error(err.Error())
-			resp.ERROR(c, "注册失败")
-			return
-		}
+	platformAccount, merchant, err := h.platformService.GetOrCreatePlatform(
+		mobile,
+		"minapp",
+		session.OpenID,
+		"微信用户",
+		"https://tax.szwtdl.cn/static/images/default.png",
+		c.ClientIP(),
+	)
+	if err != nil {
+		h.Log.Error(err)
+		resp.ERROR(c, "登录失败")
+		return
 	}
-
 	// 统一生成 JWT
-	token, err := utils.GenerateJWT(user.ID, user.Username)
+	token, err := utils.GenerateJWT(merchant.ID, merchant.Username)
 	if err != nil {
 		resp.ERROR(c, "生成Token失败")
 		return
 	}
 
 	// 更新 token 信息
-	if err = h.merchantService.Update(user.ID, map[string]interface{}{
+	if err = h.merchantService.Update(merchant.ID, map[string]interface{}{
 		"token":     token,
 		"login_ip":  c.ClientIP(),
 		"last_time": time.Now().Format("2006-01-02 15:04:05"),
@@ -191,7 +185,7 @@ func (h *PublicHandler) MobileLogin(c *gin.Context) {
 
 	resp.SUCCESS(c, map[string]interface{}{
 		"token":  token,
-		"openid": session.OpenID,
+		"openid": platformAccount.PlatformUID,
 		"mobile": mobile,
 	})
 }
@@ -224,6 +218,7 @@ func (h *PublicHandler) Register(c *gin.Context) {
 		Password:     hashedPwd,
 		Salt:         salt,
 		Token:        token,
+		IsPassword:   true,
 		RegisterTime: time.Now().Format("2006-01-02 15:04:05"),
 		RegisterIP:   c.ClientIP(),
 	}

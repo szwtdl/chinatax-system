@@ -13,12 +13,12 @@ type ConfigService struct {
 func NewConfigService(db *gorm.DB, repo repository.BaseRepository[model.Config]) *ConfigService {
 	return &ConfigService{
 		BaseService[model.Config]{
-			Repo: repo,
+			repo: repo,
 			db:   db,
 		},
 	}
 }
 
 func (s *ConfigService) GetSystem(name string) (*model.Config, error) {
-	return s.Repo.FindOne(s.db, map[string]interface{}{"marker": name})
+	return s.repo.FindOne(s.db, map[string]interface{}{"marker": name})
 }

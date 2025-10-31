@@ -13,16 +13,16 @@ type CityTaxService struct {
 func NewCityTaxService(db *gorm.DB, repo repository.BaseRepository[model.CityTax]) *CityTaxService {
 	return &CityTaxService{
 		BaseService: BaseService[model.CityTax]{
-			Repo: repo,
+			repo: repo,
 			db:   db,
 		},
 	}
 }
 
 func (h *CityTaxService) GetClient(clientID string) (*model.CityTax, error) {
-	return h.Repo.FindOne(h.db, map[string]interface{}{"client_id": clientID, "status": "0"})
+	return h.repo.FindOne(h.db, map[string]interface{}{"client_id": clientID, "status": "0"})
 }
 
 func (h *CityTaxService) GetCityName(cityName string) (*model.CityTax, error) {
-	return h.Repo.FindOne(h.db, map[string]interface{}{"city_name": cityName})
+	return h.repo.FindOne(h.db, map[string]interface{}{"city_name": cityName})
 }

@@ -14,14 +14,14 @@ type PermissionService struct {
 func NewPermissionService(db *gorm.DB, repo repository.BaseRepository[model.Permission]) *PermissionService {
 	return &PermissionService{
 		BaseService: BaseService[model.Permission]{
-			Repo: repo,
+			repo: repo,
 			db:   db,
 		},
 	}
 }
 
 func (s *PermissionService) FindOne(cond map[string]interface{}, preloads ...string) (*model.Permission, error) {
-	return s.Repo.FindOne(s.db, cond, preloads...)
+	return s.repo.FindOne(s.db, cond, preloads...)
 }
 
 func (s *PermissionService) CreatePermission(p *model.Permission) error {
@@ -35,7 +35,7 @@ func (s *PermissionService) CreatePermission(p *model.Permission) error {
 	if count > 0 {
 		return errors.New("权限名称已存在")
 	}
-	return s.Repo.Create(s.db, p)
+	return s.repo.Create(s.db, p)
 }
 
 func (s *PermissionService) UpdatePermission(p *model.Permission) error {
@@ -52,12 +52,12 @@ func (s *PermissionService) UpdatePermission(p *model.Permission) error {
 		return errors.New("权限名称已存在")
 	}
 
-	return s.Repo.Update(s.db, p)
+	return s.repo.Update(s.db, p)
 }
 
 func (s *PermissionService) DeletePermission(id uint) error {
 	if id == 0 {
 		return errors.New("权限ID不能为空")
 	}
-	return s.Repo.Delete(s.db, map[string]interface{}{"id": id})
+	return s.repo.Delete(s.db, map[string]interface{}{"id": id})
 }

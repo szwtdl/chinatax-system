@@ -14,14 +14,14 @@ type AdminService struct {
 func NewAdminService(db *gorm.DB, repo repository.BaseRepository[model.Admin]) *AdminService {
 	return &AdminService{
 		BaseService: BaseService[model.Admin]{
-			Repo: repo,
+			repo: repo,
 			db:   db,
 		},
 	}
 }
 
 func (s *AdminService) GetByUsername(username string) (*model.Admin, error) {
-	return s.Repo.FindOne(s.db, map[string]interface{}{"username": username})
+	return s.repo.FindOne(s.db, map[string]interface{}{"username": username})
 }
 
 func (s *AdminService) CreateWithRoles(admin *model.Admin, roleIDs []uint) error {
@@ -90,7 +90,7 @@ func (s *AdminService) DeleteWithRoles(adminID uint) error {
 }
 
 func (s *AdminService) HasPermission(userID uint, path, method string) (bool, error) {
-	admin, err := s.Repo.FindOne(s.db, map[string]interface{}{"id": userID})
+	admin, err := s.repo.FindOne(s.db, map[string]interface{}{"id": userID})
 	if err != nil {
 		return false, err
 	}

@@ -14,7 +14,7 @@ type RoleService struct {
 func NewRoleService(db *gorm.DB, repo repository.BaseRepository[model.Role]) *RoleService {
 	return &RoleService{
 		BaseService: BaseService[model.Role]{
-			Repo: repo,
+			repo: repo,
 			db:   db,
 		},
 	}

@@ -11,6 +11,7 @@ type Admin struct {
 	Salt         string
 	Status       bool   `gorm:"default:true"`
 	Super        bool   `gorm:"default:false"`
+	IsEmail      bool   `gorm:"default:false"`
 	RegisterTime string `json:"register_time"`
 	RegisterIP   string `json:"register_ip"`
 	LoginIp      string `json:"login_ip"`

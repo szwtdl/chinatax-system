@@ -6,7 +6,7 @@ import (
 )
 
 type BaseService[T any] struct {
-	Repo repository.BaseRepository[T]
+	repo repository.BaseRepository[T]
 	db   *gorm.DB
 }
 
@@ -15,35 +15,35 @@ func (s *BaseService[T]) Db() *gorm.DB {
 }
 
 func (s *BaseService[T]) GetByID(id uint) (*T, error) {
-	return s.Repo.FindOne(s.db, map[string]interface{}{"id": id})
+	return s.repo.FindOne(s.db, map[string]interface{}{"id": id})
 }
 
 func (s *BaseService[T]) Find(where map[string]interface{}) ([]T, error) {
-	return s.Repo.Find(s.db, where)
+	return s.repo.Find(s.db, where)
 }
 
 func (s *BaseService[T]) FindOne(where map[string]interface{}) (*T, error) {
-	return s.Repo.FindOne(s.db, where)
+	return s.repo.FindOne(s.db, where)
 }
 
 func (s *BaseService[T]) Pagination(where map[string]interface{}, page, pageSize int, order string) ([]T, int64, error) {
-	return s.Repo.FindWithPagination(s.db, where, page, pageSize, order)
+	return s.repo.FindWithPagination(s.db, where, page, pageSize, order)
 }
 
 func (s *BaseService[T]) Create(entity *T) error {
-	return s.Repo.Create(s.db, entity)
+	return s.repo.Create(s.db, entity)
 }
 
 func (s *BaseService[T]) Update(entity *T) error {
-	return s.Repo.Update(s.db, entity)
+	return s.repo.Update(s.db, entity)
 }
 
 func (s *BaseService[T]) Delete(where map[string]interface{}) error {
-	return s.Repo.Delete(s.db, where)
+	return s.repo.Delete(s.db, where)
 }
 
 func (s *BaseService[T]) DeleteByID(id uint) error {
-	return s.Repo.DeleteByID(s.db, id)
+	return s.repo.DeleteByID(s.db, id)
 }
 
 func (s *BaseService[T]) UpdateFields(where map[string]interface{}, fields map[string]interface{}) (int64, error) {

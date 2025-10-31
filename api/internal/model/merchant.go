@@ -9,6 +9,7 @@ type Merchant struct {
 	Email        string               `gorm:"uniqueIndex;size:50;not null" json:"email"`
 	Token        string               `json:"token"`
 	Salt         string               `json:"salt"`
+	IsPassword   bool                 `gorm:"default:false" json:"isPassword"`
 	RegisterTime string               `json:"register_time"`
 	RegisterIP   string               `json:"register_ip"`
 	LoginIp      string               `json:"login_ip"`

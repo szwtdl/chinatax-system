@@ -14,7 +14,7 @@ import (
 
 func NewGormConfig() *gorm.Config {
 	return &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Silent),
+		Logger: logger.Default.LogMode(logger.Info),
 		NamingStrategy: schema.NamingStrategy{
 			TablePrefix:         "china_",
 			SingularTable:       false,
@@ -46,6 +46,7 @@ func NewMysql(config *gorm.Config, appConfig *types.AppConfig) (*gorm.DB, error)
 		&model.Permission{},
 		&model.RolePermission{},
 		&model.Merchant{},
+		&model.MerchantPlatform{},
 		&model.Partner{},
 		&model.CityTax{},
 		&model.MerchantTaxAccount{},

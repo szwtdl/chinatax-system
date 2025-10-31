@@ -14,7 +14,7 @@ import (
 
 func NewGormConfig() *gorm.Config {
 	return &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
+		Logger: logger.Default.LogMode(logger.Silent),
 		NamingStrategy: schema.NamingStrategy{
 			TablePrefix:         "china_",
 			SingularTable:       false,

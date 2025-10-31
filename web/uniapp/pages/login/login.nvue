@@ -1,0 +1,102 @@
+<template>
+	<view>
+		<view class="h3">公司记账报税</view>
+		<view class="sub-title">每月仅需几分钟，用手机轻松搞定</view>
+		<image class="logo" src="https://www.gamaz.cn/skin/img/logo.png" mode="aspectFit"></image>
+		<button v-if="isCheck" class="login-btn" open-type="getPhoneNumber" @getphonenumber="onGetPhoneNumber">手机号码快捷登录</button>
+		<button v-else class="login-btn" @click="toTip">手机号码快捷登录</button>
+		<view class="login-check">
+			<label class="radio" @click="toggleCheck">
+				<radio :checked="isCheck" value="1" color="#007aff" class="custom-radio" /><text>同意</text>
+			</label>
+			<text class="a-link" @click="() => go('/pages/user_agreement/user_agreement')">《用户服务协议》</text>
+			<text>与</text>
+			<text class="a-link" @click="() => go('/pages/privacy/privacy')">《隐私协议》</text>
+		</view>
+	</view>
+</template>
+
+<script>
+	import { getPhoneNumber } from "@/utils/api.uts"
+	import { navigateTo } from '@/utils/navigate.uts'
+	export default {
+		data() {
+			return {
+				isCheck: false
+			}
+		},
+		methods: {
+			go(url) {
+				navigateTo(url)
+			},
+			toggleCheck() {
+				this.isCheck = !this.isCheck
+			},
+			toTip() {
+				uni.showToast({ title: "请勾选用户协议", icon: "none" })
+			},
+			onGetPhoneNumber(e) {
+				getPhoneNumber(e).then((res) => {
+				  const {mobile,openid,token} = res.data
+				  if (mobile && openid && token) {
+					uni.showToast({ title: "登录成功", icon: "none" })
+					uni.setStorageSync("token", token)
+					uni.setStorageSync("phone", mobile)
+					uni.setStorageSync("openid", openid)
+					uni.switchTab({
+						url:"/pages/index/index"
+					})
+				  }
+				})
+				.catch((err) => {
+				  uni.showToast({ title: err.message || "获取失败", icon: "none" })
+				})
+			}
+		}
+	}
+</script>
+
+<style scoped lang="scss">
+	.h3{
+		font-size: $uni-font-size-title;
+		margin: 40rpx auto 10rpx;
+	}
+	.sub-title{
+		font-size: $uni-font-size-base;
+		margin: 0 auto 30rpx;
+	}
+	.logo{
+		max-width: 65%;
+		margin: 0 auto;
+	}
+	.login-btn{
+		display: block;
+		position: fixed;
+		left: 20rpx;
+		right: 20rpx;
+		bottom: 350rpx;
+		margin: 20rpx 30rpx;
+		border-radius: 20rpx;
+		color: white;
+		background-color: $uni-color-primary;
+	}
+	.login-check{
+		display: block;
+		position: fixed;
+		left: 20rpx;
+		right: 20rpx;
+		bottom: 280rpx;
+		padding: 5rpx 100rpx;
+		margin: 20rpx auto;
+		font-size: $uni-font-size-sm;
+		.radio{
+			display: inline-block;
+			.custom-radio {
+				transform: scale(.7);
+			}
+		}
+		.a-link{
+			color: $uni-color-primary;
+		}
+	}
+</style>

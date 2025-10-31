@@ -1,0 +1,36 @@
+### 注册账号
+POST {{ host }}/partner/api/v1/public/register
+Content-Type: application/json
+
+{
+  "username": "{{ username }}",
+  "password": "{{ password }}"
+}
+
+### 财务登录
+POST {{ host }}/partner/api/v1/public/login
+Content-Type: application/json
+
+{
+  "username": "{{ username }}",
+  "password": "{{ password }}"
+}
+
+> {%
+    client.global.set("token", response.body.data.token);
+%}
+
+### 账号信息
+POST {{ host }}/partner/api/v1/partner/info
+Content-Type: application/json
+Authorization: Bearer {{ token }}
+
+
+### 修改信息
+POST {{ host }}/partner/api/v1/partner/update
+Content-Type: application/json
+Authorization: Bearer {{ token }}
+
+{
+
+}

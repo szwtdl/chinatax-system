@@ -1,0 +1,159 @@
+<template>
+	<view>
+		<view class="header">
+			<view class="login-not-check">
+				<view class="login-check-body">
+					<view class="login-check-body-title">伽玛账-用手机自己记账报税</view>
+					<view class="login-check-body-sub-title">每月最快一分钟完成</view>
+				</view>
+				<view @click="() => go('/pages/login/login')" class="login-check-btns">
+					<view class="login-check-text">
+						注册/登录
+					</view> 
+					<uni-icons class="login-check-more" type="right" color="#3C84F9" size="18"></uni-icons>
+				</view>
+			</view>
+		</view>
+		
+		<view class="header-ad">
+			每月仅需要几分钟，用手机轻松搞定记账报税
+		</view>
+		<view class="header-menu">
+			<view class="header-menu-item">
+				<image src="/static/logo.png" mode="aspectFit"></image>
+				<text>发票</text>
+			</view>
+			<view class="header-menu-item">
+				<image src="/static/logo.png" mode="aspectFit"></image>
+				<text>银行</text>
+			</view>
+			<view class="header-menu-item">
+				<image src="/static/logo.png" mode="aspectFit"></image>
+				<text>税务</text>
+			</view>
+			<view class="header-menu-item">
+				<image src="/static/logo.png" mode="aspectFit"></image>
+				<text>报表</text>
+			</view>
+		</view>
+		<view class="menu-list">
+			<view class="menu-item" @click="() => go('/pages/company_create/company_create')">
+				<text class="title">新增公司</text>
+				<uni-icons class="more" type="right" color="#747474" size="20"></uni-icons>
+			</view>
+			<view class="menu-item">
+				<text class="title">员工与工资</text>
+				<uni-icons class="more" type="right" color="#747474" size="20"></uni-icons>
+			</view>
+			<view class="menu-item">
+				<text class="title">手机开票</text>
+				<uni-icons class="more" type="right" color="#747474" size="20"></uni-icons>
+			</view>
+			<view class="menu-item">
+				<text class="title">帮助中心</text>
+				<uni-icons class="more" type="right" color="#747474" size="20"></uni-icons>
+			</view>
+			<view class="menu-item">
+				<text class="title">公司授权</text>
+				<uni-icons class="more" type="right" color="#747474" size="20"></uni-icons>
+			</view>
+			<view class="menu-item" @click="() => go('/pages/setting/setting')">
+				<text class="title">设置</text>
+				<uni-icons class="more" type="right" color="#747474" size="20"></uni-icons>
+			</view>
+		</view>
+	</view>
+</template>
+
+<script>
+	import { redirectTo } from '@/utils/navigate.uts'
+	export default {
+		data() {
+			return {
+				
+			}
+		},
+		methods: {
+			go(url) {
+			  redirectTo(url)
+			}
+		}
+	}
+</script>
+
+<style scoped lang="scss">
+.login-not-check{
+	display: block;
+	padding: 50rpx 30rpx;
+	.login-check-body{
+		float: left;
+		.login-check-body-title{
+			font-size: $uni-font-size-lg;
+			color: $uni-color-title;
+		}
+		.login-check-body-sub-title{
+			font-size: $uni-font-size-sm;
+			color: $uni-color-subtitle;
+		}
+	}
+	.login-check-btns{
+		float: right;
+		padding: 20rpx 30rpx;
+		border-radius: 100rpx;
+		display: inline-block;
+		font-size: $uni-font-size-lg;
+		color: $uni-color-primary;
+		background-color: #E3F1FE;
+		.login-check-text{
+			float: left;
+			margin-top: 3rpx;
+		}
+		.login-check-more{
+			float: left;
+			color: $uni-color-primary;
+		}
+	}
+}
+.header-ad{
+	margin: 0 30rpx;
+	background-color: #222222;
+	color: #CDAF90;
+	font-size: $uni-font-size-sm;
+	padding:30rpx;
+	border-radius: 20rpx 20rpx 0rpx 0rpx;
+}
+.header-menu{
+	display: grid;
+	gap: 15;
+	margin-top: 30rpx;
+	.header-menu-item{
+		grid-row: 1;
+		display: inline-grid;
+		margin: 15rpx 0rpx;
+		image{
+			display: block;
+			margin: 0 auto 10rpx;
+			max-width: 80rpx;
+			max-height: 80rpx;
+		}
+		text{
+			display: block;
+			text-align: center;
+			font-size: $uni-font-size-base;
+		}
+	}
+}
+.menu-list{
+	.menu-item{
+		display: block;
+		padding: 30rpx 10rpx;
+		margin: 0 20rpx;
+		border-bottom: 1rpx solid #f0f0f0;
+		font-size: $uni-font-size-base;
+		font-weight: bold;
+		.more{
+			float: right;
+		}
+	}
+}
+</style>

@@ -1,0 +1,49 @@
+const needLoginPages = [
+  '/pages/user/profile',
+  '/pages/order/list',
+  '/company_create/company_create',
+  '/pages/cart/checkout',
+]
+
+function isLogin() {
+  try {
+    const token = uni.getStorageSync('token')
+    return !!token
+  } catch (e) {
+    return false
+  }
+}
+
+export function navigateTo(url, options = {}) {
+  const needLogin = needLoginPages.some(page => url.startsWith(page))
+  if (needLogin && !isLogin()) {
+    uni.navigateTo({
+      url: '/pages/login/login?redirect=' + encodeURIComponent(url)
+    })
+    return
+  }
+
+  // 正常跳转
+  uni.navigateTo({
+    url,
+    ...options
+  })
+}
+
+export function redirectTo(url, options = {}) {
+  uni.redirectTo({
+    url,
+    ...options
+  })
+}
+
+export function switchTab(url) {
+  const needLogin = needLoginPages.some(page => url.startsWith(page))
+  if (needLogin && !isLogin()) {
+    uni.navigateTo({
+      url: '/pages/login/login?redirect=' + encodeURIComponent(url)
+    })
+    return
+  }
+  uni.switchTab({ url })
+}

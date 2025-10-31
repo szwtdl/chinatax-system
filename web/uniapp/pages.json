@@ -1,0 +1,107 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "首页",
+				"backgroundColor": "#F3F8FC",
+				"navigationBarBackgroundColor": "#F3F8FC"
+			}
+		},
+		{
+			"path" : "pages/login/login",
+			"style" : 
+			{
+				"navigationBarTitleText" : "授权登录"
+			}
+		},
+		{
+			"path" : "pages/tax/tax",
+			"style" : 
+			{
+				"navigationBarTitleText" : "报税"
+			}
+		},
+		{
+			"path" : "pages/bill/bill",
+			"style" : 
+			{
+				"navigationBarTitleText" : "发票"
+			}
+		},
+		{
+			"path": "pages/my/my",
+			"style": 
+			{
+				"navigationBarTitleText": "个人中心"
+			}
+		},
+		{
+			"path" : "pages/setting/setting",
+			"style" : 
+			{
+				"navigationBarTitleText" : "设置"
+			}
+		},
+		{
+			"path" : "pages/about/about",
+			"style" : 
+			{
+				"navigationBarTitleText" : "关于我们"
+			}
+		},
+		{
+			"path" : "pages/privacy/privacy",
+			"style" : 
+			{
+				"navigationBarTitleText" : "隐私协议"
+			}
+		},
+		{
+			"path" : "pages/user_agreement/user_agreement",
+			"style" : 
+			{
+				"navigationBarTitleText" : "用户协议"
+			}
+		},
+		{
+			"path" : "pages/company_create/company_create",
+			"style" : 
+			{
+				"navigationBarTitleText" : "",
+				"backgroundColor": "#F3F8FC",
+				"navigationBarBackgroundColor": "#F3F8FC"
+			}
+		}
+	],
+	"globalStyle": {
+		"backgroundTextStyle": "light",
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "伽玛帐",
+		"navigationBarBackgroundColor": "#ffffff",
+		"backgroundColor": "#f6f6f6"
+	},
+	"tabBar": {
+		"backgroundColor": "#F6F6F6",
+		"borderStyle": "white",
+		"list": [
+			{
+				"pagePath": "pages/index/index",
+				"text": "记帐"
+			},
+			{
+				"pagePath": "pages/tax/tax",
+				"text": "报税"
+			},
+			{
+				"pagePath": "pages/bill/bill",
+				"text": "发票"
+			},
+			{
+				"pagePath": "pages/my/my",
+				"text": "我的"
+			}
+		]
+	},
+	"uniIdRouter": {}
+}

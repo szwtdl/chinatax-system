@@ -1,0 +1,10 @@
+export function isLoggedIn(): boolean {
+	const token = uni.getStorageSync("token")
+	return token != null && token != ""
+}
+export function logout(): void {
+	uni.removeStorageSync("token")
+	uni.removeStorageSync("user_id")
+	uni.removeStorageSync("info")
+	uni.reLaunch({ url: "/pages/login/login" }) // 替换为你的登录页路径
+}

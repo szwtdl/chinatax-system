@@ -1,0 +1,25 @@
+<template>
+	<view class="container">
+		<rich-text :selectable="true" :nodes="content"></rich-text>
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				content:"<p>伽玛账(www.gamaz.cn)成立于2021年底，位于上海。创始人及联合创始人均曾在阿里系、用友系、五八集团等担任高管职位，并且产研及营销团队成员也大多来自于用友、税友、淘宝网及阿里云，分别负责产品研发、用户体验服务及营销推广等工作。<\/p><p>伽玛账是一个2B的SaaS平台，可以帮助创业者\/小微企业主大大节省人工成本和时间成本。<\/p><p>它代替传统的代理记账机构和专业的财务人员，企业老板不需要懂任何财务知识，日常记账报税时通过极简化的操作（只需要两个步骤），就能自动完成发票的收集、生成记账凭证、生成财务报表、生成纳税数据并自动完成企业税及个税的申报。伽玛账从上线至今，已有上万家企业使用。<\/p><p><br\/><\/p>"
+			}
+		},
+		methods: {
+			
+		}
+	}
+</script>
+
+<style scoped lang="scss">
+	.container{
+		padding: 15rpx;
+		font-size: $uni-font-size-base;
+	}
+</style>

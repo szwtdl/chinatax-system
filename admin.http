@@ -1,0 +1,214 @@
+### 增加管理员
+POST {{ host }}/admin/api/v1/account/create
+Content-Type: application/json
+Authorization: Bearer {{ token }}
+
+{
+  "username": "guest@gmail.com",
+  "password": "Pj123456#",
+  "nickname": "来宾账号",
+  "avatar": "static/images/default.png",
+  "role_ids": [2]
+}
+
+### 删除管理员
+POST {{ host }}/admin/api/v1/account/delete
+Content-Type: application/json
+Authorization: Bearer {{ token }}
+
+{
+  "id": 2
+}
+
+### 管理员列表
+POST {{ host }}/admin/api/v1/account/list
+Content-Type: application/json
+Authorization: Bearer {{ token }}
+
+{
+  "keyword": "",
+  "filter": ""
+}
+
+
+### 管理员登录
+POST {{ host }}/admin/api/v1/public/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123",
+  "remember": false
+}
+
+> {%
+    client.global.set("token", response.body.data.token);
+    client.global.set("username", response.body.data.username);
+%}
+
+### 管理员信息
+GET {{ host }}/admin/api/v1/public/info
+Content-Type: application/json
+Authorization: Bearer {{ token }}
+
+
+### 管理员列表
+POST {{ host }}/admin/api/v1/account/list
+Content-Type: application/json
+Authorization: Bearer {{ token }}
+
+{
+  "page": 1,
+  "limit": 20,
+  "keyword": ""
+}
+
+### 权限列表
+POST {{ host }}/admin/api/v1/permission/list
+Content-Type: application/json
+Authorization: Bearer {{ token }}
+
+{
+  "page": 1,
+  "limit": 20
+}
+
+### 增加权限
+POST {{ host }}/admin/api/v1/permission/create
+Content-Type: application/json
+Authorization: Bearer {{ token }}
+
+{
+  "parent_id": 1,
+  "name": "tax:delete",
+  "Path": "admin/api/v1/city_tax/delete",
+  "Method": "POST",
+  "Description": "删除城市"
+}
+
+### 更新权限
+POST {{ host }}/admin/api/v1/permission/update
+Content-Type: application/json
+Authorization: Bearer {{ token }}
+
+{
+  "id": 6,
+  "parent_id": 5,
+  "name": "tax:create",
+  "Path": "admin/api/v1/city_tax/create",
+  "Method": "POST",
+  "Description": "增加城市"
+}
+
+
+### 删除权限
+POST {{ host }}/admin/api/v1/permission/delete
+Content-Type: application/json
+Authorization: Bearer {{ token }}
+
+{
+  "id": 7
+}
+
+
+### 角色列表
+POST {{ host }}/admin/api/v1/role/list
+Content-Type: application/json
+Authorization: Bearer {{ token }}
+
+
+### 增加角色
+POST {{ host }}/admin/api/v1/role/create
+Content-Type: application/json
+Authorization: Bearer {{ token }}
+
+{
+  "name": "visitors",
+  "display_name": "访客",
+  "description": "访客",
+  "status": 1,
+  "permission_ids": [1]
+}
+
+### 更新角色
+POST {{ host }}/admin/api/v1/role/update
+Content-Type: application/json
+Authorization: Bearer {{ token }}
+
+{
+  "id": 1,
+  "name": "admin",
+  "display_name": "管理员",
+  "description": "普通管理员",
+  "status": 1,
+  "permission_ids": [1,2,3,4,5,6,8,9,10]
+}
+
+
+### 删除角色
+POST {{ host }}/admin/api/v1/role/delete
+Content-Type: application/json
+Authorization: Bearer {{ token }}
+
+{
+  "id": 4
+}
+
+### 城市列表
+POST {{ host }}/admin/api/v1/city_tax/list
+Content-Type: application/json
+Authorization: Bearer {{ token }}
+
+
+
+### 添加城市
+POST {{ host }}/admin/api/v1/city_tax/create
+Content-Type: application/json
+Authorization: Bearer {{ token }}
+
+{
+  "name": "深圳",
+  "city_name": "shenzhen",
+  "client_id": "b5492bba3b4e4f37b977c354a2b26a59",
+  "description": "开通深圳市"
+}
+
+### 更新城市
+POST {{ host }}/admin/api/v1/city_tax/update
+Content-Type: application/json
+Authorization: Bearer {{ token }}
+
+{
+  "id": 1,
+  "name": "深圳",
+  "city_name": "shenzhen",
+  "client_id": "b5492bba3b4e4f37b977c354a2b26a59",
+  "description": "深圳",
+  "status": "0"
+}
+
+### 删除城市
+POST {{ host }}/admin/api/v1/city_tax/delete
+Content-Type: application/json
+Authorization: Bearer {{ token }}
+
+{
+  "id": 3
+}
+
+### 获取配置
+POST {{ host }}/admin/api/v1/system/get
+Content-Type: application/json
+Authorization: Bearer {{ token }}
+
+
+
+### 设置系统
+POST {{ host }}/admin/api/v1/system/set
+Content-Type: application/json
+Authorization: Bearer {{ token }}
+
+{
+  "key": "email",
+  "value": "szpengjian@gmail.com"
+}

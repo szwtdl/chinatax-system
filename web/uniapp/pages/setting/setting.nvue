@@ -1,0 +1,96 @@
+<template>
+	<view class="container">
+		<view class="header">
+			<view class="logo">
+				<image src="/static/logo.png" mode="aspectFit"></image>
+			</view>
+			<view class="menu-list">
+				<view class="menu-item" @click="() => go('/pages/user_agreement/user_agreement')">
+					<text>用户服务协议</text>
+				</view>
+				<view class="menu-item" @click="() => go('/pages/privacy/privacy')">
+					<text>隐私协议</text>
+				</view>
+				<view class="menu-item" @click="() => go('/pages/about/about')">
+					<text>关于我们</text>
+				</view>
+			</view>
+			
+		</view>
+		<button v-if="isLogin" class="logout" @click="() => logout('/pages/login/login')" >退出登录</button>
+	</view>
+</template>
+
+<script>
+	import { isLoggedIn } from '@/utils/auth'
+	import { navigateTo,redirectTo } from '@/utils/navigate.uts'
+	export default {
+		data() {
+			return {
+				isLogin: false
+			}
+		},
+		created() {
+			this.isLogin = isLoggedIn()
+		},
+		methods: {
+			go(url) {
+				navigateTo(url)
+			},
+			logout() {
+			  uni.showModal({
+			    title: '提示',
+			    content: '确定要退出登录吗？',
+			    confirmText: '确定',
+			    cancelText: '取消',
+			    success: (res) => {
+			      if (res.confirm) {
+			        uni.removeStorageSync('token')
+			        uni.removeStorageSync('phone')
+			        uni.removeStorageSync('openid')
+					this.isLogin = false
+			        uni.showToast({
+			          title: '已退出登录',
+			          icon: 'none'
+			        })
+			      }
+			    }
+			  })
+			}
+
+		}
+	}
+</script>
+
+<style scoped lang="scss">
+	.container{
+		width: 100vw;
+		background-color:#F6F6F6;
+		height: 100vh;
+		.header{
+			background-color: #ffffff;
+			.logo{
+				margin: 30rpx auto;
+				display: block;
+			}
+			.menu-list{
+				.menu-item{
+					padding: 30rpx 30rpx;
+					font-size: $uni-font-size-base;
+					font-weight: bold;
+					border-bottom: 1rpx solid #f0f0f0;
+				}
+			}
+		}
+		.logout{
+			position: fixed;
+			left: 20rpx;
+			right: 20rpx;
+			bottom: 200rpx;
+			margin: 20rpx 30rpx;
+			color: white;
+			background-color: $uni-color-primary;
+			border-radius: 20rpx;
+		}
+	}
+</style>

@@ -1,0 +1,105 @@
+const BASE_URL: string = "https://tax.szwtdl.cn/merchant/api/v1/"
+function getToken(): string {
+	const token = uni.getStorageSync("token")
+	return token ?? ""
+}
+
+function request(
+	url: string,
+	method: RequestMethod = "GET",
+	data: any = null,
+	headers: Record<string, any> = {}
+): Promise<any> {
+	return new Promise((resolve, reject) => {
+		uni.request({
+			url: BASE_URL + url,
+			method,
+			data,
+			header: {
+				"Content-Type": "application/json",
+				"Authorization": "Bearer " + getToken(),
+				...headers
+			},
+			success(res) {
+				const statusCode = res.statusCode
+				const resData = res.data as { code?: number; message?: string; [key: string]: any }
+				const code = resData.code
+				if (statusCode === 401 || code === 400) {
+					uni.showToast({ title: "请登录后再操作", icon: "none" })
+					uni.removeStorageSync("token")
+					uni.removeStorageSync("user_id")
+					uni.removeStorageSync("info")
+					uni.redirectTo({ url: "/pages/login/login" })
+					reject(resData)
+				} else if (statusCode >= 200 && statusCode < 300) {
+					resolve(resData)
+				} else {
+					const msg = typeof resData === "object" && "message" in resData
+						? String((resData as any).message)
+						: "请求失败"
+					uni.showToast({ title: msg, icon: "none" })
+					resolve(resData)
+				}
+			},
+			fail(err) {
+				uni.showToast({ title: "网络错误", icon: "none" })
+				reject(err)
+			}
+		})
+	})
+}
+
+export function get(url: string, data: any = null, headers: Record<string, any> = {}): Promise<any> {
+	return request(url, "GET", data, headers)
+}
+
+export function post(url: string, data: any = null, headers: Record<string, any> = {}): Promise<any> {
+	return request(url, "POST", data, headers)
+}
+
+export function put(url: string, data: any = null, headers: Record<string, any> = {}): Promise<any> {
+	return request(url, "PUT", data, headers)
+}
+
+export function del(url: string, data: any = null, headers: Record<string, any> = {}): Promise<any> {
+	return request(url, "DELETE", data, headers)
+}
+
+export function uploadFile(
+	url: string,
+	filePath: string,
+	name: string = "file",
+	formData: Record<string, any> = {},
+	headers: Record<string, any> = {}
+): Promise<any> {
+	return new Promise((resolve, reject) => {
+		uni.uploadFile({
+			url: BASE_URL + url,
+			filePath,
+			name,
+			formData: formData as any, // ✅ 强制转为 any，跳过类型检查
+			header: {
+				"Authorization": "Bearer " + getToken(),
+				...headers
+			},
+			success(res) {
+				try {
+					const data = JSON.parse(res.data)
+					if (res.statusCode >= 200 && res.statusCode < 300) {
+						resolve(data)
+					} else {
+						const msg = String(data?.message ?? "上传失败")
+						uni.showToast({ title: msg, icon: "none" })
+						reject(data)
+					}
+				} catch (err) {
+					reject(err)
+				}
+			},
+			fail(err) {
+				uni.showToast({ title: "上传失败，网络错误", icon: "none" })
+				reject(err)
+			}
+		})
+	})
+}

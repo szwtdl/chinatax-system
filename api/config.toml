@@ -1,0 +1,53 @@
+Listen = "0.0.0.0:9977"
+MysqlDns = "root:123456@tcp(localhost:3306)/china_tax?charset=utf8mb4&collation=utf8mb4_unicode_ci&parseTime=True&loc=Local"
+StaticDir = "./static"
+StaticUrl = "http://localhost/9977/static"
+AesEncryptKey = "kcv7rmtvv99kunwcamybdy4r"
+
+[MinApp]
+  AppName = "内测小程序"
+  AppID = "wxc7000dc3da7e2ee5"
+  AppKey = ""
+  AppSecret = "5499110ef804c5670b3f95292e91733e"
+
+[Session]
+  Driver = "cookie"
+  SecretKey = "793814vh77awp8v9c6nty7qwf5n20x9v"
+  Name = "SESSION_ADMIN_TOKEN"
+  Path = "/"
+  Domain = "szwtdl.cn"
+  MaxAge = 3600
+  Secure = true
+  HttpOnly = true
+  SameSite = 2
+
+[Email]
+  PlatformName = "金数据财务平台"
+  SMTPHost = "smtp.qq.com"
+  SMTPPort = 465
+  Username = "718349985@qq.com"
+  Password = "uacmnntcajambcdf"
+
+[OcrServer]
+  Host = "http://localhost:8000"
+  Username = ""
+  Password = ""
+
+[NotAuth]
+  Paths = ["merchant/api/v1/public/login", "merchant/api/v1/public/register", "merchant/api/v1/public/sendSms", "merchant/api/v1/public/sendEmail", "merchant/api/v1/public/repass", "partner/api/v1/public/login", "partner/api/v1/public/register", "admin/api/v1/public/login"]
+
+[RedisConfig]
+  Host = "localhost:6379"
+  Password = ""
+  DBName = 0
+
+[Logs]
+  Mode = "development"
+  FilePath = "logs/app.log"
+  MaxSize = 0
+  MaxAge = 0
+  MaxBackups = 0
+
+[Gama]
+  app_id = "100000000"
+  app_secret = "970aa04c033bfa8c3be3e019c26af9c0"

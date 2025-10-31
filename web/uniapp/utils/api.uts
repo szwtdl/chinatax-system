@@ -1,0 +1,122 @@
+import { get, post, put, del } from '@/utils/request'
+
+
+// 微信登录封装
+export function wxLogin() : Promise<any> {
+	return new Promise((resolve, reject) => {
+		uni.getProvider({
+			service: "oauth",
+			success: (res) => {
+				// 确认支持 weixin
+				if (res.provider && res.provider.includes("weixin")) {
+					uni.login({
+						provider: "weixin",
+						success: (loginRes) => {
+							console.log(loginRes);
+							if (loginRes.code) {
+								// 调用后端接口换取 token
+								post("code", { code: loginRes.code })
+									.then((resp) => {
+										uni.setStorageSync("openid", resp.data.openid)
+										uni.setStorageSync("session_key", resp.data.session_key)
+										uni.setStorageSync("unionid", resp.data.unionid)
+										uni.showToast({
+											title: "登录成功",
+											icon: "none",
+										})
+										resolve(resp)
+									})
+									.catch((err) => {
+										console.error("后端错误:", err)
+										uni.showToast({
+											title: "登录失败",
+											icon: "none",
+										})
+										reject(err)
+									})
+							} else {
+								console.error("微信登录失败:", loginRes.errMsg)
+								uni.showToast({
+									title: "登录失败",
+									icon: "none",
+								})
+								reject(loginRes)
+							}
+						},
+						fail: (err) => {
+							console.error("uni.login 调用失败:", err)
+							uni.showToast({ title: "微信授权失败", icon: "none" })
+							reject(err)
+						},
+					})
+				} else {
+					uni.showToast({ title: "当前环境不支持微信登录", icon: "none" })
+					reject(new Error("no weixin provider"))
+				}
+			},
+			fail: (err) => {
+				console.error("uni.getProvider 调用失败:", err)
+				uni.showToast({ title: "获取登录方式失败", icon: "none" })
+				reject(err)
+			},
+		})
+	})
+}
+
+// 微信获取手机号码
+export function getPhoneNumber(e: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    if (e.detail.errMsg === "getPhoneNumber:ok") {
+      // 先获取新的 code
+      wx.login({
+        success(loginRes) {
+          if (loginRes.code) {
+            const data = {
+              code: loginRes.code,           // ✅ 这里是真正的 code
+              iv: e.detail.iv,
+              encrypted_data: e.detail.encryptedData,
+            }
+            post("public/mobile", data)
+              .then((res) => {
+                resolve(res)
+              })
+              .catch((err) => {
+                reject(err)
+              })
+          } else {
+            reject(new Error("获取 code 失败"))
+          }
+        },
+        fail(err) {
+          reject(err)
+        }
+      })
+    } else {
+      console.log("用户拒绝授权:", e.detail.errMsg)
+      reject(new Error("用户拒绝授权"))
+    }
+  })
+}
+
+
+interface SearchCompanyParams {
+  keywords: string
+  type: "1" | "2"
+}
+
+
+export function searchCompany(params: SearchCompanyParams): Promise<any> {
+  return new Promise((resolve, reject) => {
+    if (!params.keywords || !params.type) {
+      reject(new Error("参数缺失"))
+      return
+    }
+    post("company/search", params)
+      .then(res => {
+        resolve(res)
+      })
+      .catch(err => {
+        reject(err)
+      })
+  })
+}

@@ -1,0 +1,240 @@
+<template>
+	<view class="container">
+		<view class="header">
+			<view class="header-icon">
+				安全图标
+			</view>
+			<view class="header-title">
+				新增公司与验证
+			</view>
+		</view>
+		<view class="body">
+			<view class="body-title">
+				需要公司法人手机号验证
+			</view>
+			<view class="form-item">
+				<view class="form-item-title">
+					<text class="text-title">请输入公司名称</text>
+					<view class="scan">
+						扫描营业执照
+					</view>
+				</view>
+				<view class="form-item-input">
+					<input type="text" v-model="keywords" placeholder="公司名称" @input="onInput" />
+				</view>
+				<view v-if="showList" class="dropdown-list">
+					<scroll-view scroll-y class="scroll-box">
+						<view v-for="(item, index) in filteredList" :key="index" class="dropdown-item"
+							@click="selectItem(item)">
+							{{ item }}
+						</view>
+					</scroll-view>
+				</view>
+			</view>
+			<view class="form-item">
+				<view class="form-item-title">
+					<text class="text-title">公司性质</text>
+				</view>
+				<view class="form-item-radio">
+					<radio-group @change="onChange">
+						<label v-for="item in list" :key="item.value" class="radio">
+							<radio :value="item.value" color="#007aff" class="custom-radio"
+								:checked="item.value === selected" />
+							<text class="radio-text">{{ item.label }}</text>
+						</label>
+					</radio-group>
+				</view>
+			</view>
+			<button class="btn-save">立即创建</button>
+		</view>
+	</view>
+</template>
+
+<script>
+	import {
+		searchCompany
+	} from "@/utils/api.uts"
+	export default {
+		data() {
+			return {
+				keywords: "",
+				companyList: [],
+				filteredList: [],
+				showList: false,
+				list: [{
+						label: '小规模纳税人',
+						value: '1'
+					},
+					{
+						label: '一般纳税人',
+						value: '2'
+					}
+				],
+				selected: '1'
+			}
+		},
+		methods: {
+			onInput(e) {
+				this.keywords = e.detail.value.trim()
+				if (!this.keywords || this.keywords.length < 2) {
+					this.showList = false
+					this.filteredList = []
+					return
+				}
+				searchCompany({ keywords: this.keywords, type: "1" })
+				  .then(res => {
+					this.companyList = res.data || []
+				    this.filteredList = (res.data || []).map(item => item.name)
+				    this.showList = this.filteredList.length > 0
+				  })
+				  .catch(err => {
+				    this.filteredList = []
+				    this.showList = false
+				  })
+			},
+			selectItem(item) {
+				this.keywords = item
+				this.showList = false
+			},
+			onChange(e) {
+				console.log('选中的值是：', e.detail.value)
+			}
+		}
+	}
+</script>
+
+<style scoped lang="scss">
+	.container {
+		width: 100vw;
+		height: 100vh;
+		background-color: #F3F8FC;
+
+		.header {
+			display: block;
+			margin: 40rpx auto;
+			color: $uni-color-primary;
+
+			.header-icon {
+				display: inline-block;
+				margin-right: 10rpx;
+				font-size: $uni-font-size-title;
+			}
+
+			.header-title {
+				display: inline-block;
+				font-size: $uni-font-size-title;
+			}
+		}
+
+		.body {
+			background-color: white;
+			padding: 30rpx;
+			margin: 30rpx;
+			border-radius: 50rpx;
+
+			.body-title {
+				text-align: center;
+				margin: 40rpx auto;
+				padding: 50rpx 0rpx;
+				font-size: $uni-font-size-title;
+				color: #7C7C7C;
+			}
+
+			.form-item {
+				margin-bottom: 30rpx;
+				position: relative;
+
+				.form-item-title {
+					margin-bottom: 20rpx;
+					display: block;
+
+					.text-title {
+						color: #8F959E;
+						float: left;
+
+					}
+
+					.scan {
+						text-align: right;
+						float: right;
+						font-size: $uni-font-size-sm;
+						color: $uni-color-primary;
+					}
+				}
+
+				.dropdown-list {
+					position: absolute;
+					top: 170rpx;
+					/* 根据你的布局微调 */
+					left: 0;
+					width: 100%;
+					background-color: #fff;
+					border: 1px solid #eee;
+					border-radius: 10rpx;
+					box-shadow: 0 4rpx 10rpx rgba(0, 0, 0, 0.1);
+					z-index: 999;
+				}
+
+				.scroll-box {
+					height: 400rpx;
+					overflow-y: scroll;
+				}
+
+				.dropdown-item {
+					padding: 20rpx;
+					border-bottom: 1px solid #f0f0f0;
+				}
+
+				.dropdown-item:last-child {
+					border-bottom: none;
+				}
+
+				.dropdown-item:hover {
+					background-color: #f5f5f5;
+				}
+
+				.form-item-input {
+					border: 1px solid #E1E1E1;
+					border-radius: 30rpx;
+					padding: 30rpx;
+
+					input {
+						flex: 1;
+						height: 100%;
+						border: none;
+						background: transparent;
+						font-size: $uni-font-size-base;
+					}
+				}
+
+				.form-item-radio {
+					border: 1px solid #E1E1E1;
+					border-radius: 30rpx;
+					padding: 30rpx;
+
+					.radio {
+						display: inline-block;
+						margin-right: 25rpx;
+
+						.custom-radio {
+							transform: scale(.8);
+						}
+
+						.radio-text {
+							color: #9F9F9F;
+							font-size: $uni-font-size-base;
+						}
+					}
+				}
+			}
+
+			.btn-save {
+				margin-top: 30rpx;
+				background-color: $uni-color-primary;
+				color: white;
+				border-radius: 30rpx;
+				margin-bottom: 80rpx;
+			}
+		}
+	}
+</style>

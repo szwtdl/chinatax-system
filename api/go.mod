@@ -8,8 +8,8 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/redis/go-redis/v9 v9.16.0
 	github.com/silenceper/wechat/v2 v2.1.10
-	github.com/szwtdl/chinatax v0.0.0-20251030160222-921c087ce450
-	github.com/szwtdl/chinatax_api v0.0.0-00010101000000-000000000000
+	github.com/szwtdl/chinatax v0.0.1-beta
+	github.com/szwtdl/chinatax_api v0.0.1-beta
 	go.uber.org/fx v1.24.0
 	go.uber.org/zap v1.27.0
 	golang.org/x/crypto v0.43.0
@@ -72,7 +72,3 @@ require (
 	golang.org/x/tools v0.38.0 // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
 )
-
-replace github.com/szwtdl/chinatax => /Users/pengjian/work/go/chinatax
-
-replace github.com/szwtdl/chinatax_api => /Users/pengjian/work/go/chinatax_api

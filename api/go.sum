@@ -162,6 +162,10 @@ github.com/stretchr/testify v1.8.0/go.mod h1:yNjHg4UonilssWZ8iaSj1OCr/vHnekPRkoO
 github.com/stretchr/testify v1.8.1/go.mod h1:w2LPCIKwWwSfY2zedu0+kehJoqGctiVI29o6fzry7u4=
 github.com/stretchr/testify v1.11.1 h1:7s2iGBzp5EwR7/aIZr8ao5+dra3wiQyKjjFuvgVKu7U=
 github.com/stretchr/testify v1.11.1/go.mod h1:wZwfW3scLgRK+23gO65QZefKpKQRnfz6sD981Nm4B6U=
+github.com/szwtdl/chinatax v0.0.1-beta h1:TR+gf8yF1Hkdyt7dICMcWBOaF0yo8PtuHvPGNTb9+w4=
+github.com/szwtdl/chinatax v0.0.1-beta/go.mod h1:Pdqu3VnES94PN5f0vrWPZ9S9mvZsm44anlx8jEcF/9M=
+github.com/szwtdl/chinatax_api v0.0.1-beta h1:7S84vE1fJZLdHMoO+zu7zQIwXtmZkiyfZfNdxI43Z2Y=
+github.com/szwtdl/chinatax_api v0.0.1-beta/go.mod h1:Gm8GL81ecwToNc3sJSfbVy5+kimTBQgrCW7Oya/FuWQ=
 github.com/szwtdl/req v1.0.12 h1:ubBfBTneIh4AxBA4JdcCrxMczt5rQU6//rKoIjnvvmk=
 github.com/szwtdl/req v1.0.12/go.mod h1:7U0acy0SEApvZDC2yvwhU7aCNJ3Fy7gBpgihU//bWLw=
 github.com/tidwall/gjson v1.14.1 h1:iymTbGkQBhveq21bEvAQ81I0LEBork8BFe1CUZXdyuo=

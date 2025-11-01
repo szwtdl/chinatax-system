@@ -105,8 +105,10 @@ func (h *PublicHandler) Logout(c *gin.Context) {
 
 func (h *PublicHandler) Register(c *gin.Context) {
 	var req struct {
-		Username string `json:"username" binding:"required"`
-		Password string `json:"password" binding:"required,min=6,max=20"`
+		Nickname   string `json:"nickname" binding:"required"`
+		Username   string `json:"username" binding:"required"`
+		Password   string `json:"password" binding:"required,min=6,max=20"`
+		InviteCode string `json:"invite_code,omitempty"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		resp.ERROR(c, "参数错误")
@@ -120,14 +122,13 @@ func (h *PublicHandler) Register(c *gin.Context) {
 		resp.ERROR(c, "账号已经存在")
 		return
 	}
-	token := utils.RandString(32)
 	salt, _ := utils.GenerateSalt(16)
 	hashedPwd, _ := utils.HashPassword(req.Password, salt)
 	merchant := &model.Partner{
 		Username:     req.Username,
 		Password:     hashedPwd,
 		Salt:         salt,
-		Token:        token,
+		InviteCode:   req.InviteCode,
 		RegisterTime: time.Now().Format("2006-01-02 15:04:05"),
 		RegisterIP:   c.ClientIP(),
 	}

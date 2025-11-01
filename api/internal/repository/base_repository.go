@@ -2,6 +2,7 @@ package repository
 
 import (
 	"gorm.io/gorm"
+	"strings"
 )
 
 type BaseRepository[T any] interface {
@@ -59,36 +60,32 @@ func (r *baseRepository[T]) FindWithPagination(
 	var total int64
 
 	tx := db.Model(new(T))
-
-	// 预加载
+	// 预加载关联
 	for _, p := range preloads {
 		tx = tx.Preload(p)
 	}
-
-	// map 条件
+	// 处理 where 条件（核心优化）
 	if len(where) > 0 {
 		for k, v := range where {
-			switch val := v.(type) {
-			case []interface{}:
-				// raw SQL 条件
-				tx = tx.Where(k, val...)
-			default:
-				// 普通 map 条件
+			// 判断是否为原始 SQL 条件（如 "username LIKE ?"）
+			// 特征：k 包含 SQL 关键字（如 LIKE/IN），且 v 是单一值（非切片）
+			if strings.Contains(k, "LIKE") || strings.Contains(k, "IN") || strings.Contains(k, "=") {
+				// 按原始 SQL 条件处理：tx.Where("username LIKE ?", "%key%")
+				tx = tx.Where(k, v)
+			} else {
+				// 按普通键值对处理：tx.Where(map[string]interface{}{"id": 1})
 				tx = tx.Where(map[string]interface{}{k: v})
 			}
 		}
 	}
-
 	// 统计总数
 	if err := tx.Count(&total).Error; err != nil {
 		return nil, 0, err
 	}
-
 	// 默认排序
 	if order == "" {
 		order = "id DESC"
 	}
-
 	// 分页查询
 	if err := tx.Order(order).
 		Offset((page - 1) * pageSize).
@@ -96,7 +93,6 @@ func (r *baseRepository[T]) FindWithPagination(
 		Find(&result).Error; err != nil {
 		return nil, 0, err
 	}
-
 	return result, total, nil
 }
 

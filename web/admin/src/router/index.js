@@ -170,14 +170,14 @@ export const asyncRoutes = [
   {
     path: '/agent',
     component: Layout,
-    name: '代理管理',
-    meta: { title: '代理管理', icon: 'list', roles: ['admin'] },
+    name: '财务管理',
+    meta: { title: '财务管理', icon: 'list', roles: ['admin'] },
     children: [
       {
         path: 'list',
-        component: () => import('@/views/agent/index'),
-        name: 'School',
-        meta: { title: '代理列表', icon: 'list', noCache: true }
+        component: () => import('@/views/partner/index'),
+        name: 'Partner',
+        meta: { title: '财务公司', icon: 'list', noCache: true }
       },
       {
         path: 'order',

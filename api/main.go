@@ -215,6 +215,7 @@ func main() {
 			group.POST("delete", h.Delete)
 			group.POST("sort", h.Sort)
 		}),
+
 		fx.Invoke(func(s *core.AppServer, h *admin.AccountHandler) {
 			group := s.Engine.Group("/admin/api/v1/account")
 			group.GET("list", h.List)
@@ -222,6 +223,7 @@ func main() {
 			group.POST("update", h.Update)
 			group.POST("delete", h.Delete)
 		}),
+
 		fx.Invoke(func(s *core.AppServer, h *admin.PermissionHandler) {
 			group := s.Engine.Group("/admin/api/v1/permission")
 			group.GET("list", h.List)
@@ -231,6 +233,14 @@ func main() {
 		}),
 		fx.Invoke(func(s *core.AppServer, h *admin.RoleHandler) {
 			group := s.Engine.Group("/admin/api/v1/role")
+			group.GET("list", h.List)
+			group.POST("create", h.Create)
+			group.POST("update", h.Update)
+			group.POST("delete", h.Delete)
+		}),
+
+		fx.Invoke(func(s *core.AppServer, h *admin.PartnerHandler) {
+			group := s.Engine.Group("/admin/api/v1/partner")
 			group.GET("list", h.List)
 			group.POST("create", h.Create)
 			group.POST("update", h.Update)

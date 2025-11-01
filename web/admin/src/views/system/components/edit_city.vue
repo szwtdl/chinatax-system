@@ -52,7 +52,12 @@ export default {
   },
   data() {
     return {
-      formLabelWidth: '100px'
+      formLabelWidth: '100px',
+      statusMap: {
+        '正常': 0,
+        '维护中': 1,
+        '下架': 2
+      }
     }
   },
   methods: {
@@ -62,7 +67,9 @@ export default {
     },
     cancel() { this.$emit('update:visible', false) },
     submit() {
-      ApiArea.Update(this.form).then(response => {
+      const formData = { ...this.form }
+      formData.status = `${this.statusMap[formData.status]}`
+      ApiArea.Update(formData).then(response => {
         this.$message({
           message: '操作成功',
           type: 'success'

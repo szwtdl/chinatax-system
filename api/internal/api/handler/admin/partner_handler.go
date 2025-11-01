@@ -32,18 +32,19 @@ func NewPartnerHandler(app *types.AppConfig, db *gorm.DB, log *zap.SugaredLogger
 }
 
 func (h *PartnerHandler) List(c *gin.Context) {
-	var req struct {
-		Keyword string `json:"keyword" binding:"required"`
-		Filter  string `json:"filter,omitempty"`
-	}
-	if err := c.ShouldBindJSON(&req); err != nil {
-		resp.ERROR(c, "参数错误")
-		return
-	}
 	page := h.GetInt(c, "page", 1)
 	limit := h.GetInt(c, "limit", 10)
+	keyword := c.Query("keywords")
+	filter := c.Query("filter")
+	where := map[string]interface{}{}
+	if keyword != "" && filter != "" {
+		allowedFilters := map[string]bool{"username": true, "nickname": true, "email": true} // 允许的字段
+		if allowedFilters[filter] {
+			where[filter+" LIKE ?"] = "%" + utils.EscapeLikeKeyword(keyword) + "%"
+		}
+	}
 	var lists = make([]vo.Partner, 0)
-	items, total, err := h.partnerService.Pagination(map[string]interface{}{}, page, limit, "id DESC")
+	items, total, err := h.partnerService.Pagination(where, page, limit, "id DESC")
 	if err != nil {
 		resp.SUCCESS(c, "获取失败")
 		return
@@ -59,6 +60,8 @@ func (h *PartnerHandler) List(c *gin.Context) {
 			RegisterIP:   item.RegisterIP,
 			LastTime:     item.LastTime,
 			LoginIp:      item.LoginIp,
+			Status:       item.Status,
+			LoginCount:   item.LoginCount,
 			CreatedAt:    utils.Stamp2str(item.CreatedAt.Unix()),
 			UpdatedAt:    utils.Stamp2str(item.UpdatedAt.Unix()),
 		})
@@ -66,3 +69,20 @@ func (h *PartnerHandler) List(c *gin.Context) {
 	pageVo := vo.NewPage(total, page, limit, lists)
 	resp.SUCCESS(c, pageVo)
 }
+
+func (h *PartnerHandler) Create(c *gin.Context) {
+	var req struct {
+		Nickname string `json:"nickname" binding:"required"`
+		Username string `json:"username" binding:"required"`
+		Password string `json:"password" binding:"required"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		resp.ERROR(c, types.BizMsg[types.InvalidParam])
+		return
+	}
+
+}
+
+func (h *PartnerHandler) Update(c *gin.Context) {}
+
+func (h *PartnerHandler) Delete(c *gin.Context) {}

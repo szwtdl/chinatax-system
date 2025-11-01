@@ -210,14 +210,13 @@ func (h *PublicHandler) Register(c *gin.Context) {
 		resp.ERROR(c, "账号已经存在")
 		return
 	}
-	token := utils.RandString(32)
 	salt, _ := utils.GenerateSalt(16)
 	hashedPwd, _ := utils.HashPassword(req.Password, salt)
 	merchant := &model.Merchant{
 		Username:     req.Username,
 		Password:     hashedPwd,
 		Salt:         salt,
-		Token:        token,
+		InviteCode:   req.InviteCode,
 		IsPassword:   true,
 		RegisterTime: time.Now().Format("2006-01-02 15:04:05"),
 		RegisterIP:   c.ClientIP(),
@@ -362,8 +361,8 @@ func (h *PublicHandler) RePassword(c *gin.Context) {
 			resp.ERROR(c, "您没有绑定邮箱")
 			return
 		}
-		ok, err := h.emailService.VerifyCode(req.Username, user.Email, req.Code)
-		if err != nil || !ok {
+		result, ok := h.emailService.VerifyCode(req.Username, user.Email, req.Code)
+		if ok != nil || !result {
 			resp.ERROR(c, "验证码无效或已过期")
 			return
 		}

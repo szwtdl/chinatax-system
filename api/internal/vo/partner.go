@@ -7,6 +7,9 @@ type Partner struct {
 	Username     string `json:"username"`
 	Email        string `json:"email"`
 	Token        string `json:"token"`
+	Status       bool   `json:"status"`
+	InviteCode   string `json:"invite_code"`
+	LoginCount   int    `json:"login_count"`
 	RegisterTime string `json:"register_time"`
 	RegisterIP   string `json:"register_ip"`
 	LoginIp      string `json:"login_ip"`

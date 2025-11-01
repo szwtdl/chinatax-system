@@ -8,6 +8,13 @@ import (
 	"time"
 )
 
+func EscapeLikeKeyword(keyword string) string {
+	keyword = strings.ReplaceAll(keyword, "'", "''")
+	keyword = strings.ReplaceAll(keyword, "%", "\\%")
+	keyword = strings.ReplaceAll(keyword, "_", "\\_")
+	return keyword
+}
+
 func Contains(slice []string, item string) bool {
 	for _, s := range slice {
 		if strings.EqualFold(s, item) { // 忽略大小写比较

@@ -47,15 +47,16 @@ func (h *CityTaxHandler) List(c *gin.Context) {
 	}
 	for _, item := range items {
 		lists = append(lists, vo.TaxCity{
-			ID:        item.ID,
-			Name:      item.Name,
-			CityName:  item.CityName,
-			ClientID:  item.ClientID,
-			Domain:    fmt.Sprintf("https://etax.%s.chinatax.gov.cn", item.CityName),
-			SortNum:   item.SortNum,
-			Status:    StatusMap[item.Status],
-			CreatedAt: item.CreatedAt.Format("2006-01-02 15:04:05"),
-			UpdatedAt: item.UpdatedAt.Format("2006-01-02 15:04:05"),
+			ID:          item.ID,
+			Name:        item.Name,
+			CityName:    item.CityName,
+			ClientID:    item.ClientID,
+			Domain:      fmt.Sprintf("https://etax.%s.chinatax.gov.cn", item.CityName),
+			SortNum:     item.SortNum,
+			Status:      StatusMap[item.Status],
+			Description: item.Description,
+			CreatedAt:   item.CreatedAt.Format("2006-01-02 15:04:05"),
+			UpdatedAt:   item.UpdatedAt.Format("2006-01-02 15:04:05"),
 		})
 	}
 	pageVo := vo.NewPage(total, page, limit, lists)
@@ -67,6 +68,8 @@ func (h *CityTaxHandler) Create(c *gin.Context) {
 		Name        string `json:"name" binding:"required"`
 		ClientID    string `json:"client_id" binding:"required,len=32"`
 		CityName    string `json:"city_name" binding:"required"`
+		SortNum     int    `json:"sort_num" binding:"required"`
+		Status      string `json:"status" binding:"required,oneof=0 1 2"`
 		Description string `json:"description,omitempty"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -101,11 +104,12 @@ func (h *CityTaxHandler) Update(c *gin.Context) {
 		Name        string `json:"name" binding:"required"`
 		ClientID    string `json:"client_id" binding:"required,len=32"`
 		CityName    string `json:"city_name" binding:"required"`
-		Status      string `json:"status" binding:"required,oneof=0 1"`
+		SortNum     int    `json:"sort_num" binding:"required"`
+		Status      string `json:"status" binding:"required,oneof=0 1 2"`
 		Description string `json:"description,omitempty"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
-		resp.ERROR(c, "参数错误")
+		resp.ERROR(c, types.BizMsg[types.InvalidParam])
 		return
 	}
 	client, err := h.cityTaxService.GetByID(req.ID)
@@ -117,6 +121,7 @@ func (h *CityTaxHandler) Update(c *gin.Context) {
 	client.ClientID = req.ClientID
 	client.CityName = req.CityName
 	client.Description = req.Description
+	client.SortNum = req.SortNum
 	client.Status = req.Status
 	if err = h.cityTaxService.Update(client); err != nil {
 		resp.ERROR(c, "更新失败")
@@ -129,6 +134,11 @@ func (h *CityTaxHandler) Delete(c *gin.Context) {
 	var req struct {
 		ID uint `json:"id" binding:"required"`
 	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		resp.ERROR(c, types.BizMsg[types.InvalidParam])
+		return
+	}
+	fmt.Println(fmt.Sprintf("id: %d", req.ID))
 	_, err := h.cityTaxService.GetByID(req.ID)
 	if err != nil {
 		resp.ERROR(c, "城市不存在")

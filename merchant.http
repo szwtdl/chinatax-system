@@ -3,6 +3,7 @@ POST {{ host }}/merchant/api/v1/public/register
 Content-Type: application/json
 
 {
+  "nickname": "公司名称",
   "username": "{{ username }}",
   "password": "{{ password }}"
 }

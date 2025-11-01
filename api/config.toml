@@ -34,7 +34,7 @@ AesEncryptKey = "kcv7rmtvv99kunwcamybdy4r"
   Password = ""
 
 [NotAuth]
-  Paths = ["merchant/api/v1/public/login", "merchant/api/v1/public/register", "merchant/api/v1/public/sendSms", "merchant/api/v1/public/sendEmail", "merchant/api/v1/public/repass", "partner/api/v1/public/login", "partner/api/v1/public/register", "admin/api/v1/public/login"]
+  Paths = ["merchant/api/v1/public/login", "merchant/api/v1/public/register", "merchant/api/v1/public/sendSms", "merchant/api/v1/public/sendEmail", "merchant/api/v1/public/repass", "partner/api/v1/public/login", "partner/api/v1/public/register", "admin/api/v1/public/login", "admin/api/v1/public/captcha"]
 
 [RedisConfig]
   Host = "localhost:6379"

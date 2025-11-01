@@ -1,6 +1,10 @@
 package core
 
 import (
+	"fmt"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
+	"github.com/gin-contrib/sessions/memstore"
 	"github.com/gin-gonic/gin"
 	"github.com/szwtdl/chinatax-system/internal/auth"
 	"github.com/szwtdl/chinatax-system/internal/core/types"
@@ -43,6 +47,8 @@ func (s *AppServer) Init(debug bool) {
 	if debug {
 		s.Debug = debug
 	}
+	s.Engine.Use(corsMiddleware())
+	s.Engine.Use(sessionMiddleware(s.Config))
 	s.Engine.Use(authorizeMiddleware(s))
 	s.Engine.Use(errorHandler)
 	s.Engine.Static("/static", s.Config.StaticDir)
@@ -61,15 +67,58 @@ func (s *AppServer) Run() error {
 	return s.Engine.Run(s.Config.Listen)
 }
 
-func errorHandler(c *gin.Context) {
-	defer func() {
-		if err := recover(); err != nil {
-			debug.PrintStack()
-			c.JSON(http.StatusOK, types.BizVo{Code: types.Failed, Message: "系统错误"})
-			c.Abort()
+func corsMiddleware() gin.HandlerFunc {
+	allowedOrigins := []string{
+		"https://tax.szwtdl.cn",
+		"http://localhost:9527",
+	}
+	return func(c *gin.Context) {
+		origin := c.Request.Header.Get("Origin")
+		if origin != "" && utils.Contains(allowedOrigins, origin) {
+			c.Header("Access-Control-Allow-Origin", origin)
+			c.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, PATCH")
+			c.Header("Access-Control-Allow-Headers", "Authorization, Content-Length, Token, Session, Content-Type, X-Requested-With")
+			c.Header("Access-Control-Expose-Headers", "Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers")
+			c.Header("Access-Control-Allow-Credentials", "true")
+			c.Header("Access-Control-Max-Age", "172800")
 		}
-	}()
-	c.Next()
+		// OPTIONS 预检请求直接返回
+		if c.Request.Method == http.MethodOptions {
+			c.AbortWithStatus(http.StatusOK)
+			return
+		}
+		defer func() {
+			if err := recover(); err != nil {
+				fmt.Println("CORS middleware panic:", err)
+			}
+		}()
+		c.Next()
+	}
+}
+
+func sessionMiddleware(config *types.AppConfig) gin.HandlerFunc {
+	var store sessions.Store
+	switch config.Session.Driver {
+	case types.SessionDriverMem:
+		store = memstore.NewStore([]byte(config.Session.SecretKey))
+		break
+	case types.SessionDriverCookie:
+		store = cookie.NewStore([]byte(config.Session.SecretKey))
+		break
+	default:
+		config.Session.Driver = types.SessionDriverCookie
+		store = cookie.NewStore([]byte(config.Session.SecretKey))
+	}
+
+	store.Options(sessions.Options{
+		Path:     config.Session.Path,
+		Domain:   config.Session.Domain,
+		MaxAge:   config.Session.MaxAge,
+		Secure:   config.Session.Secure,
+		HttpOnly: config.Session.HttpOnly,
+		SameSite: config.Session.SameSite,
+	})
+	return sessions.Sessions(config.Session.Name, store)
 }
 
 func authorizeMiddleware(s *AppServer) gin.HandlerFunc {
@@ -89,7 +138,7 @@ func authorizeMiddleware(s *AppServer) gin.HandlerFunc {
 		}
 		// 解析模块
 		if path == "" {
-			resp.ERROR(c, types.BizMsg[types.NotAuthorized], types.AuthError)
+			resp.ERROR(c, types.BizMsg[types.NotFound], types.NotFound)
 			c.Abort()
 			return
 		}
@@ -106,6 +155,16 @@ func authorizeMiddleware(s *AppServer) gin.HandlerFunc {
 	}
 }
 
+func errorHandler(c *gin.Context) {
+	defer func() {
+		if err := recover(); err != nil {
+			debug.PrintStack()
+			c.JSON(http.StatusOK, types.BizVo{Code: types.Failed, Message: "系统错误"})
+			c.Abort()
+		}
+	}()
+	c.Next()
+}
 func IsWhiteListed(path string, patterns []string) bool {
 	// 去掉路径开头的 /
 	path = strings.TrimLeft(path, "/")

@@ -1,7 +1,9 @@
 package admin
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/mojocn/base64Captcha"
 	"github.com/szwtdl/chinatax-system/internal/api/handler"
 	"github.com/szwtdl/chinatax-system/internal/core/types"
 	"github.com/szwtdl/chinatax-system/internal/model"
@@ -13,6 +15,8 @@ import (
 	"gorm.io/gorm"
 	"time"
 )
+
+var store = base64Captcha.DefaultMemStore
 
 type PublicHandler struct {
 	handler.BaseHandler
@@ -29,6 +33,20 @@ func NewPublicHandler(app *types.AppConfig, db *gorm.DB, log *zap.SugaredLogger)
 		},
 		service: adminService,
 	}
+}
+
+func (h *PublicHandler) GetCaptcha(c *gin.Context) {
+	driver := base64Captcha.NewDriverDigit(47, 180, 4, 0.7, 80)
+	captcha := base64Captcha.NewCaptcha(driver, store)
+	id, b64s, _, err := captcha.Generate()
+	if err != nil {
+		resp.ERROR(c, fmt.Sprintf("base64 captcha generate error: %v", err))
+		return
+	}
+	resp.SUCCESS(c, map[string]string{
+		"captcha_id":  id,
+		"captcha_img": b64s,
+	})
 }
 
 func (h *PublicHandler) Info(c *gin.Context) {
@@ -53,11 +71,17 @@ func (h *PublicHandler) Info(c *gin.Context) {
 
 func (h *PublicHandler) Login(c *gin.Context) {
 	var req struct {
-		Username string `json:"username" binding:"required,min=4,max=20"`
-		Password string `json:"password" binding:"required,min=6,max=20"`
+		Username  string `json:"username" binding:"required,min=4,max=20"`
+		Password  string `json:"password" binding:"required,min=6,max=20"`
+		CaptchaID string `json:"captcha_id" binding:"required"`
+		Captcha   string `json:"captcha_code" binding:"required"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		resp.ERROR(c, types.BizMsg[types.InvalidParam])
+		return
+	}
+	if !store.Verify(req.CaptchaID, req.Captcha, true) {
+		resp.ERROR(c, "验证码错误")
 		return
 	}
 	user, err := h.service.GetByUsername(req.Username)
@@ -86,4 +110,8 @@ func (h *PublicHandler) Login(c *gin.Context) {
 	resp.SUCCESS(c, map[string]interface{}{
 		"token": token,
 	})
+}
+
+func (h *PublicHandler) Logout(c *gin.Context) {
+	resp.SUCCESS(c, "退出成功")
 }

@@ -24,7 +24,10 @@
 sudo apt install redis-server -y
 ```
 
-
+### 部署后台页面
+```bash
+scp -rp build/dist/admin root@39.108.50.141:/var/www/tax.szwtdl.cn/web
+```
 
 ### 上传配置
 

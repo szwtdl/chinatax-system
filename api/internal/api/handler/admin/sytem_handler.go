@@ -15,6 +15,7 @@ import (
 
 type SystemHandler struct {
 	handler.BaseHandler
+	db            *gorm.DB
 	configService *service.ConfigService
 }
 
@@ -25,37 +26,58 @@ func NewSystemHandler(app *types.AppConfig, db *gorm.DB, log *zap.SugaredLogger)
 			App: app,
 			Log: log,
 		},
+		db:            db,
 		configService: service.NewConfigService(db, repo),
 	}
 }
 
 func (h *SystemHandler) GetValue(c *gin.Context) {
-	var req struct {
-		Marker string `json:"key"`
-	}
-	if err := c.ShouldBindJSON(&req); err != nil {
-		resp.ERROR(c, types.BizMsg[types.InvalidParam])
+	key := c.Query("key")
+	var config model.Config
+	res := h.db.Where("marker", key).First(&config)
+	if res.Error != nil {
+		resp.ERROR(c, res.Error.Error())
 		return
 	}
-	config, err := h.configService.GetSystem(req.Marker)
+	var m map[string]interface{}
+	err := utils.JsonDecode(config.Config, &m)
 	if err != nil {
-		resp.ERROR(c, "没有数据")
+		resp.ERROR(c, err.Error())
 		return
 	}
-	resp.SUCCESS(c, utils.JsonDecode(config.Config, map[string]interface{}{
-		"name": "xx",
-	}))
+	resp.SUCCESS(c, m)
 }
 
 func (h *SystemHandler) SetValue(c *gin.Context) {
-	var req struct {
-		Key   string `json:"key"`
-		Value string `json:"value"`
+	var data struct {
+		Key    string                 `json:"key"`
+		Config map[string]interface{} `json:"config"`
 	}
-	if err := c.ShouldBindJSON(&req); err != nil {
+	if err := c.ShouldBindJSON(&data); err != nil {
 		resp.ERROR(c, types.BizMsg[types.InvalidParam])
 		return
 	}
-
-	resp.SUCCESS(c, req)
+	str := utils.JsonEncode(&data.Config)
+	config := model.Config{Key: data.Key, Config: str}
+	res := h.db.FirstOrCreate(&config, model.Config{Key: data.Key})
+	if res.Error != nil {
+		resp.ERROR(c, res.Error.Error())
+		return
+	}
+	if config.ID > 0 {
+		config.Config = str
+		res = h.db.Updates(&config)
+		if res.Error != nil {
+			resp.ERROR(c, res.Error.Error())
+			return
+		}
+		var cfg model.Config
+		h.db.Where("marker", data.Key).First(&cfg)
+		var err error
+		if err != nil {
+			resp.ERROR(c, "Failed to update config cache: "+err.Error())
+			return
+		}
+	}
+	resp.SUCCESS(c, config)
 }

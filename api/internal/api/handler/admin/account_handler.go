@@ -34,15 +34,9 @@ func NewAccountHandler(app *types.AppConfig, db *gorm.DB, log *zap.SugaredLogger
 func (h *AccountHandler) List(c *gin.Context) {
 	page := h.GetInt(c, "page", 1)
 	limit := h.GetInt(c, "limit", 10)
-	var req struct {
-		Keyword string `json:"keyword"`
-		Filter  string `json:"filter"`
-	}
-	if err := c.ShouldBindJSON(&req); err != nil {
-		resp.ERROR(c, "参数错误")
-		return
-	}
-	where := buildAdminWhere(req.Keyword, req.Filter)
+	keyword := c.Query("keyword")
+	filter := c.Query("filter")
+	where := buildAdminWhere(keyword, filter)
 	var lists = make([]vo.Admin, 0)
 	account, total, err := h.adminService.Pagination(where, page, limit, "id DESC")
 	if err != nil {

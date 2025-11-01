@@ -133,6 +133,7 @@ func main() {
 		fx.Provide(admin.NewMerchantHandler),
 		fx.Provide(admin.NewAccountHandler),
 		fx.Provide(admin.NewSystemHandler),
+		fx.Provide(admin.NewDashboardHandler),
 		fx.Provide(admin.NewPermissionHandler),
 		fx.Provide(admin.NewRoleHandler),
 
@@ -189,40 +190,47 @@ func main() {
 		// 平台端(平台运营)
 		fx.Invoke(func(s *core.AppServer, h *admin.PublicHandler) {
 			group := s.Engine.Group("/admin/api/v1/public")
+			group.GET("/captcha", h.GetCaptcha)
 			group.POST("login", h.Login)
+			group.POST("logout", h.Logout)
 			group.GET("info", h.Info)
 		}),
+
+		fx.Invoke(func(s *core.AppServer, h *admin.DashboardHandler) {
+			group := s.Engine.Group("/admin/api/v1/dashboard")
+			group.GET("welcome", h.Welcome)
+		}),
+
 		fx.Invoke(func(s *core.AppServer, h *admin.SystemHandler) {
 			group := s.Engine.Group("/admin/api/v1/system")
-			group.POST("get", h.GetValue)
-			group.POST("set", h.SetValue)
+			group.GET("get", h.GetValue)
+			group.POST("update", h.SetValue)
 		}),
+
 		fx.Invoke(func(s *core.AppServer, h *admin.CityTaxHandler) {
 			group := s.Engine.Group("/admin/api/v1/city_tax")
-			group.POST("list", h.List)
+			group.GET("list", h.List)
 			group.POST("create", h.Create)
 			group.POST("update", h.Update)
 			group.POST("delete", h.Delete)
 		}),
 		fx.Invoke(func(s *core.AppServer, h *admin.AccountHandler) {
 			group := s.Engine.Group("/admin/api/v1/account")
-			group.POST("list", h.List)
+			group.GET("list", h.List)
 			group.POST("create", h.Create)
 			group.POST("update", h.Update)
 			group.POST("delete", h.Delete)
 		}),
-
 		fx.Invoke(func(s *core.AppServer, h *admin.PermissionHandler) {
 			group := s.Engine.Group("/admin/api/v1/permission")
-			group.POST("list", h.List)
+			group.GET("list", h.List)
 			group.POST("create", h.Create)
 			group.POST("update", h.Update)
 			group.POST("delete", h.Delete)
 		}),
-
 		fx.Invoke(func(s *core.AppServer, h *admin.RoleHandler) {
 			group := s.Engine.Group("/admin/api/v1/role")
-			group.POST("list", h.List)
+			group.GET("list", h.List)
 			group.POST("create", h.Create)
 			group.POST("update", h.Update)
 			group.POST("delete", h.Delete)

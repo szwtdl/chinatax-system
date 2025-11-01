@@ -4,8 +4,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/rand"
+	"strings"
 	"time"
 )
+
+func Contains(slice []string, item string) bool {
+	for _, s := range slice {
+		if strings.EqualFold(s, item) { // 忽略大小写比较
+			return true
+		}
+	}
+	return false
+}
 
 func RandString(length int) string {
 	str := "0123456789abcdefghijklmnopqrstuvwxyz"

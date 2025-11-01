@@ -7,7 +7,7 @@ const (
 	Success       BizCode = 0
 	Failed        BizCode = 1
 	NotAuthorized BizCode = 400
-
+	NotFound      BizCode = 404
 	// 自定义错误码可以在这里扩展
 	InvalidParam  BizCode = 1001
 	DatabaseError BizCode = 1002
@@ -18,6 +18,7 @@ var BizMsg = map[BizCode]string{
 	Success:       "Success",
 	Failed:        "系统开小差了",
 	NotAuthorized: "未授权访问",
+	NotFound:      "资源未找到",
 	InvalidParam:  "非法参数或参数解析失败",
 	DatabaseError: "数据库操作失败",
 	AuthError:     "认证失败",

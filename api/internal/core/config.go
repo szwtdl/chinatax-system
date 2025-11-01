@@ -11,9 +11,9 @@ import (
 
 func NewDefaultConfig() *types2.AppConfig {
 	return &types2.AppConfig{
-		Listen:        "0.0.0.0:9987",
+		Listen:        "0.0.0.0:9977",
 		StaticDir:     "./static",
-		StaticUrl:     "http://localhost/9987/static",
+		StaticUrl:     "http://localhost/9977/static",
 		AesEncryptKey: utils.RandString(24),
 		RedisConfig: types2.RedisOption{
 			Host:     "localhost:6379",
@@ -38,7 +38,18 @@ func NewDefaultConfig() *types2.AppConfig {
 			AppSecret: "970aa04c033bfa8c3be3e019c26af9c0",
 		},
 		NotAuth: types2.NotFilter{
-			Paths: []string{"admin/api/v1/public/login", "merchant/api/v1/public/login", "merchant/api/v1/public/register", "partner/api/v1/public/login", "partner/api/v1/public/register"},
+			Paths: []string{
+				"merchant/api/v1/public/login",
+				"merchant/api/v1/public/register",
+				"merchant/api/v1/public/sendSms",
+				"merchant/api/v1/public/sendEmail",
+				"merchant/api/v1/public/repass",
+				"partner/api/v1/public/login",
+				"partner/api/v1/public/register",
+				"admin/api/v1/public/login",
+				"admin/api/v1/public/logout",
+				"admin/api/v1/public/captcha",
+			},
 		},
 		Email: types2.EmailConfig{
 			PlatformName: "网通动力",

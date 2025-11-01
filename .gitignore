@@ -34,3 +34,4 @@ build/
 api/logs/
 api/tmp
 web/uniapp/unpackage/
+web/admin/node_modules/

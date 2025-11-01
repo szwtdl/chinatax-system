@@ -213,6 +213,7 @@ func main() {
 			group.POST("create", h.Create)
 			group.POST("update", h.Update)
 			group.POST("delete", h.Delete)
+			group.POST("sort", h.Sort)
 		}),
 		fx.Invoke(func(s *core.AppServer, h *admin.AccountHandler) {
 			group := s.Engine.Group("/admin/api/v1/account")

@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/szwtdl/chinatax-system/internal/api/handler"
 	"github.com/szwtdl/chinatax-system/internal/core/types"
@@ -8,6 +9,7 @@ import (
 	"github.com/szwtdl/chinatax-system/internal/repository"
 	"github.com/szwtdl/chinatax-system/internal/resp"
 	"github.com/szwtdl/chinatax-system/internal/service"
+	"github.com/szwtdl/chinatax-system/internal/vo"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -30,17 +32,34 @@ func NewCityTaxHandler(app *types.AppConfig, db *gorm.DB, log *zap.SugaredLogger
 }
 
 func (h *CityTaxHandler) List(c *gin.Context) {
-	var req struct {
-		Keyword string `json:"keyword" binding:"required"`
-		Filter  string `json:"filter,omitempty"`
-		Page    int    `json:"page,omitempty"`
-		Limit   int    `json:"limit,omitempty"`
-	}
-	if err := c.ShouldBindQuery(&req); err != nil {
-		resp.ERROR(c, "参数错误")
+	page := h.GetInt(c, "page", 1)
+	limit := h.GetInt(c, "limit", 20)
+	var lists = make([]vo.TaxCity, 0)
+	items, total, err := h.cityTaxService.Pagination(map[string]interface{}{}, page, limit, "sort_num ASC")
+	if err != nil {
+		resp.ERROR(c, "查询失败")
 		return
 	}
-	resp.SUCCESS(c, "获取成功")
+	StatusMap := map[string]string{
+		"0": "正常",
+		"1": "维护中",
+		"2": "下架",
+	}
+	for _, item := range items {
+		lists = append(lists, vo.TaxCity{
+			ID:        item.ID,
+			Name:      item.Name,
+			CityName:  item.CityName,
+			ClientID:  item.ClientID,
+			Domain:    fmt.Sprintf("https://etax.%s.chinatax.gov.cn", item.CityName),
+			SortNum:   item.SortNum,
+			Status:    StatusMap[item.Status],
+			CreatedAt: item.CreatedAt.Format("2006-01-02 15:04:05"),
+			UpdatedAt: item.UpdatedAt.Format("2006-01-02 15:04:05"),
+		})
+	}
+	pageVo := vo.NewPage(total, page, limit, lists)
+	resp.SUCCESS(c, pageVo)
 }
 
 func (h *CityTaxHandler) Create(c *gin.Context) {
@@ -120,4 +139,29 @@ func (h *CityTaxHandler) Delete(c *gin.Context) {
 		return
 	}
 	resp.SUCCESS(c, "删除成功")
+}
+
+func (h *CityTaxHandler) Sort(c *gin.Context) {
+	var req struct {
+		ID      int `json:"id" binding:"required"`
+		SortNum int `json:"sort_num" binding:"required"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		resp.ERROR(c, types.BizMsg[types.InvalidParam])
+		return
+	}
+	area, err := h.cityTaxService.FindOne(map[string]interface{}{
+		"id": req.ID,
+	})
+	if err != nil {
+		resp.ERROR(c, err.Error())
+		return
+	}
+	area.SortNum = req.SortNum
+	err = h.cityTaxService.Update(area)
+	if err != nil {
+		resp.ERROR(c, err.Error())
+		return
+	}
+	resp.SUCCESS(c, types.BizMsg[types.Success])
 }

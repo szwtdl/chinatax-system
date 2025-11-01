@@ -164,62 +164,6 @@ export const asyncRoutes = [
         component: () => import('@/views/users/index'),
         name: 'Users',
         meta: { title: '会员管理', icon: 'user', noCache: true, roles: ['admin', 'editor'] }
-      },
-      {
-        path: 'tasks',
-        component: () => import('@/views/task/index'),
-        name: 'Task',
-        meta: { title: '任务列表', icon: 'chart', noCache: true, roles: ['admin', 'editor'] }
-      },
-      {
-        path: 'task_record',
-        component: () => import('@/views/task/record'),
-        name: 'TaskRecord',
-        meta: { title: '完成记录', icon: 'chart', noCache: true, roles: ['admin', 'editor'] }
-      },
-      {
-        path: 'cert_record',
-        component: () => import('@/views/task/cert'),
-        name: 'CertRecord',
-        meta: { title: '人脸记录', icon: 'chart', noCache: true, roles: ['admin', 'editor'] }
-      },
-      {
-        path: 'user_logs',
-        component: () => import('@/views/users/logs'),
-        name: 'Logs',
-        meta: { title: '登录日志', icon: 'chart', noCache: true, roles: ['admin'] }
-      }
-    ]
-  },
-  {
-    path: '/task',
-    component: Layout,
-    name: '任务管理',
-    meta: { title: '任务管理', icon: 'list' },
-    children: [
-      {
-        path: 'org',
-        component: () => import('@/views/organization/index'),
-        name: 'Organization',
-        meta: { title: '机构列表', icon: 'list', noCache: true, roles: ['admin'] }
-      },
-      {
-        path: 'platform',
-        component: () => import('@/views/platform/index.vue'),
-        name: 'Platform',
-        meta: { title: '支持平台', icon: 'list', noCache: true, roles: ['admin'] }
-      },
-      {
-        path: 'strategy',
-        component: () => import('@/views/strategy/index'),
-        name: 'Strategy',
-        meta: { title: '策略管理', icon: 'edit', roles: ['admin'] }
-      },
-      {
-        path: 'proxy',
-        component: () => import('@/views/proxy_poll/index'),
-        name: 'ProxyPool',
-        meta: { title: 'IP代理池', icon: 'list', noCache: true, roles: ['admin'] }
       }
     ]
   },
@@ -234,12 +178,6 @@ export const asyncRoutes = [
         component: () => import('@/views/agent/index'),
         name: 'School',
         meta: { title: '代理列表', icon: 'list', noCache: true }
-      },
-      {
-        path: 'redeem',
-        component: () => import('@/views/agent/redeem'),
-        name: 'Redeem',
-        meta: { title: '激活码管理', icon: 'list', noCache: true }
       },
       {
         path: 'order',
@@ -289,18 +227,18 @@ export const asyncRoutes = [
     name: '系统管理',
     meta: { title: '系统管理', icon: 'el-icon-setting', roles: ['admin'] },
     children: [
-      // {
-      //   path: 'app',
-      //   component: () => import('@/views/system/app'),
-      //   name: 'App',
-      //   meta: { title: '应用管理', icon: 'el-icon-mobile-phone', noCache: true }
-      // },
-      // {
-      //   path: 'pay',
-      //   component: () => import('@/views/system/pay'),
-      //   name: 'Pay',
-      //   meta: { title: '支付配置', icon: 'el-icon-setting', noCache: true }
-      // },
+      {
+        path: 'city',
+        component: () => import('@/views/system/area'),
+        name: 'City',
+        meta: { title: '开放地区', icon: 'el-icon-setting', noCache: true }
+      },
+      {
+        path: 'pay',
+        component: () => import('@/views/system/pay'),
+        name: 'Pay',
+        meta: { title: '支付配置', icon: 'el-icon-setting', noCache: true }
+      },
       {
         path: 'index',
         component: () => import('@/views/system/index'),

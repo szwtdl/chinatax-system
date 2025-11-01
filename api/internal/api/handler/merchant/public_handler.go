@@ -193,7 +193,7 @@ func (h *PublicHandler) MobileLogin(c *gin.Context) {
 func (h *PublicHandler) Register(c *gin.Context) {
 	var req struct {
 		Username   string `json:"username" binding:"required"`
-		Password   string `json:"password" binding:"required,min=6,max=20"`
+		Password   string `json:"password" binding:"required,min=8,max=20"`
 		InviteCode string `json:"invite_code,omitempty"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -203,6 +203,11 @@ func (h *PublicHandler) Register(c *gin.Context) {
 
 	if !utils.IsPhoneNumber(req.Username) {
 		resp.ERROR(c, "手机号格式错误")
+		return
+	}
+
+	if !utils.IsStrongPassword(req.Password) {
+		resp.ERROR(c, "账号太过简单")
 		return
 	}
 

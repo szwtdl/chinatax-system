@@ -114,10 +114,17 @@ func (h *PublicHandler) Register(c *gin.Context) {
 		resp.ERROR(c, "参数错误")
 		return
 	}
+
 	if !utils.IsPhoneNumber(req.Username) {
 		resp.ERROR(c, "手机号码不合格")
 		return
 	}
+
+	if !utils.IsStrongPassword(req.Password) {
+		resp.ERROR(c, "账号太过简单")
+		return
+	}
+
 	if exist, _ := h.PartnerService.GetByUsername(req.Username); exist != nil {
 		resp.ERROR(c, "账号已经存在")
 		return
